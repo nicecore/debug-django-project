@@ -14,10 +14,6 @@ def menu_list(request):
     # Declare empty list 'menus' and append to it all menus that haven't expired
     menus = []
     for menu in all_menus:
-        print('\n', '-'*20)
-        print('menu.expiration type: ', type(menu.expiration_date))
-        print('timezone.now type: ', type(timezone.now()))
-        print('\n', '-'*20)
         menus.append(menu)
 
     return render(request, 'menu/all_menus.html', {'menus': menus})
