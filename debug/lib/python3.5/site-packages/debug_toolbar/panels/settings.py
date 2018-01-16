@@ -1,12 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
+from collections import OrderedDict
+
 from django.conf import settings
-from django.views.debug import get_safe_settings
 from django.utils.translation import ugettext_lazy as _
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
+from django.views.debug import get_safe_settings
 
 from debug_toolbar.panels import Panel
 
@@ -22,7 +20,7 @@ class SettingsPanel(Panel):
     def title(self):
         return _("Settings from <code>%s</code>") % settings.SETTINGS_MODULE
 
-    def process_response(self, request, response):
+    def generate_stats(self, request, response):
         self.record_stats({
             'settings': OrderedDict(sorted(get_safe_settings().items(),
                                            key=lambda s: s[0])),

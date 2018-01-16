@@ -4,7 +4,7 @@ from django.utils import timezone
 from operator import attrgetter
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Item, Menu, Ingredient
+from .models import Item, Menu
 from .forms import MenuForm
 
 def menu_list(request):
@@ -14,12 +14,13 @@ def menu_list(request):
     # Declare empty list 'menus' and append to it all menus that haven't expired
     menus = []
     for menu in all_menus:
-        if menu.expiration_date >= timezone.now():
-            menus.append(menu)
+        print('\n', '-'*20)
+        print('menu.expiration type: ', type(menu.expiration_date))
+        print('timezone.now type: ', type(timezone.now()))
+        print('\n', '-'*20)
+        menus.append(menu)
 
-    # Use sorted() to get a new list 'menus' sorted by expiration date
-    menus = sorted(menus, key=attrgetter('expiration_date'))
-    return render(request, 'menu/list_all_current_menus.html', {'menus': menus})
+    return render(request, 'menu/all_menus.html', {'menus': menus})
 
 
 def menu_detail(request, pk):
@@ -33,7 +34,7 @@ def item_detail(request, pk):
         item = Item.objects.get(pk=pk)
     except ObjectDoesNotExist:
         raise Http404
-    return render(request, 'menu/detail_item.html', {'item': item})
+    return render(request, 'menu/item_detail.html', {'item': item})
 
 
 def create_new_menu(request):
@@ -46,22 +47,18 @@ def create_new_menu(request):
             return redirect('menu_detail', pk=menu.pk)
     else:
         form = MenuForm()
-    return render(request, 'menu/menu_edit.html', {'form': form})
+    return render(request, 'menu/new_menu.html', {'form': form})
 
 
 def edit_menu(request, pk):
     menu = get_object_or_404(Menu, pk=pk)
-    items = Item.objects.all()
+    form = MenuForm(instance=menu)
     if request.method == "POST":
-        menu.season = request.POST.get('season', '')
-        menu.expiration_date = datetime.strptime(request.POST.get('expiration_date', ''), '%m/%d/%Y')
-        menu.items = request.POST.get('items', '')
-        menu.save()
-
-    return render(request, 'menu/change_menu.html', {
-        'menu': menu,
-        'items': items,
-        })
+        form = MenuForm(instance=menu, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('menu_detail', pk=form.instance.pk)
+    return render(request, 'menu/edit_menu.html', {'form': form})
 
 
 

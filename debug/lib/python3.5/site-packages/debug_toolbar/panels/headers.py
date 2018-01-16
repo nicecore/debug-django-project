@@ -1,10 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from django.utils.datastructures import SortedDict as OrderedDict
+from collections import OrderedDict
+
 from django.utils.translation import ugettext_lazy as _
+
 from debug_toolbar.panels import Panel
 
 
@@ -49,7 +48,7 @@ class HeadersPanel(Panel):
             'environ': self.environ,
         })
 
-    def process_response(self, request, response):
+    def generate_stats(self, request, response):
         self.response_headers = OrderedDict(sorted(response.items()))
         self.record_stats({
             'response_headers': self.response_headers,
