@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from django.utils import timezone
-from operator import attrgetter
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Item, Menu
@@ -9,7 +8,7 @@ from .forms import MenuForm
 
 def menu_list(request):
     # Fetch all menus in a queryset
-    all_menus = Menu.objects.all()
+    all_menus = Menu.objects.all().prefetch_related('items')
 
     # Declare empty list 'menus' and append to it all menus that haven't expired
     menus = []

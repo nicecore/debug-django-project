@@ -20,7 +20,7 @@ class MenuForm(forms.ModelForm):
 
     def clean_expiration_date(self):
         expiration_date = self.cleaned_data['expiration_date']
-        if expiration_date <= timezone.now().date():
+        if expiration_date and expiration_date <= timezone.now().date():
             raise forms.ValidationError(
                 "The expiration date cannot be before the created date.")
         return expiration_date
