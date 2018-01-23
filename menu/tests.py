@@ -2,11 +2,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.urlresolvers import reverse
-
-
 from .models import Menu, Item, Ingredient
 from .forms import MenuForm
-
 
 
 class ModelTests(TestCase):
@@ -25,7 +22,7 @@ class ModelTests(TestCase):
         self.tomato = Ingredient.objects.create(name='tomato')
 
     def test_item_creation(self):
-        
+
         hummus_ingredients = Ingredient.objects.all()
         self.assertIn(self.salt, hummus_ingredients)
         self.assertIn(self.cp, hummus_ingredients)
@@ -45,9 +42,9 @@ class ModelTests(TestCase):
         hummus.save()
 
         tabbouleh = Item.objects.create(
-        name="Tabbouleh",
-        description="Delicious citrusy salad",
-        chef=self.user
+            name="Tabbouleh",
+            description="Delicious citrusy salad",
+            chef=self.user
         )
 
         tabbouleh.ingredients.add(self.parsley, self.tomato)
@@ -62,14 +59,14 @@ class ModelTests(TestCase):
 
 
 class ViewTests(TestCase):
-    
+
     def setUp(self):
 
         # A test user
 
         self.user = User.objects.create_user(
-        username='DavidGilmour',
-        password='SeeEmilyPlay')
+            username='DavidGilmour',
+            password='SeeEmilyPlay')
 
         # A test falafel
 
@@ -110,7 +107,8 @@ class ViewTests(TestCase):
         self.assertContains(resp, 'falafel')
 
     def test_view_edit_menu(self):
-        resp = self.client.get(reverse('menu_edit', kwargs={'pk': self.my_menu.id}))
+        resp = self.client.get(
+            reverse('menu_edit', kwargs={'pk': self.my_menu.id}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'menu/edit_menu.html')
         self.assertContains(resp, 'spring')
@@ -119,18 +117,6 @@ class ViewTests(TestCase):
         resp = self.client.get(reverse('menu_new'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'menu/new_menu.html')
-
-
-    # def test_create_new_menu_valid(self):
-    #     form = self.client.get(reverse('menu_new')).form
-    #     form['created_date'] = timezone.today()
-    #     form['season'] = 'Fall 2018'
-    #     form['items'] = '3'
-    #     form['expiration_date'] = '2019-10-01'
-    #     resp = form.submit()
-    #     new_menu = Menu.objects.last()
-    #     self.assertRedirects(resp, new_menu.get_absolute_url())
-
 
     def test_create_new_menu_invalid(self):
         resp = self.client.post(reverse('menu_new'),
@@ -147,8 +133,7 @@ class ViewTests(TestCase):
                              ['Enter a valid date.'])
 
 
-
-class FormTests(TestCase):
+class FormTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -156,32 +141,22 @@ class FormTests(TestCase):
             password='SeeEmilyPlay'
         )
 
-        # self.my_menu = Menu.objects.create(season='spring')
-        # self.my_other_menu = Menu.objects.create(season='summer')
-
         self.falafel = Item.objects.create(
             name='falafel',
             description='tasty vegan staple',
             chef=self.user
         )
 
+        self.hummus = Item.objects.create(
+            name='hummus',
+            description='chickpea goodness',
+            chef=self.user
+        )
+
     def test_menuform_valid(self):
         form = MenuForm(data={
-                        'season': 'Spring 2018',
-                        'created_date': timezone.now(),
-                        'items': ['1']
-                             })
+            'season': 'Spring 2018',
+            'created_date': timezone.now(),
+            'items': ['1', '2']
+        })
         self.assertTrue(form.is_valid())
-
-
-
-
-
-
-
-
-
-
-
-
-

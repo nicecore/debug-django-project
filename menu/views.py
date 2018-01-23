@@ -6,11 +6,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Item, Menu
 from .forms import MenuForm
 
-def menu_list(request):
-    # Fetch all menus in a queryset
-    all_menus = Menu.objects.all().prefetch_related('items')
 
-    # Declare empty list 'menus' and append to it all menus that haven't expired
+def menu_list(request):
+    """List all available menus."""
+    all_menus = Menu.objects.all().prefetch_related('items')
     menus = []
     for menu in all_menus:
         menus.append(menu)
@@ -19,12 +18,13 @@ def menu_list(request):
 
 
 def menu_detail(request, pk):
-    # Retrieve a menu object by pk, send to template
+    """Show the details of a particular menu."""
     menu = Menu.objects.get(pk=pk)
     return render(request, 'menu/menu_detail.html', {'menu': menu})
 
 
 def item_detail(request, pk):
+    """Show the details of a particular item."""
     try:
         item = Item.objects.get(pk=pk)
     except ObjectDoesNotExist:
@@ -33,6 +33,7 @@ def item_detail(request, pk):
 
 
 def create_new_menu(request):
+    """Create a new menu."""
     if request.method == "POST":
         form = MenuForm(request.POST)
         if form.is_valid():
@@ -46,6 +47,7 @@ def create_new_menu(request):
 
 
 def edit_menu(request, pk):
+    """Edit an existing menu."""
     menu = get_object_or_404(Menu, pk=pk)
     form = MenuForm(instance=menu)
     if request.method == "POST":
@@ -54,23 +56,3 @@ def edit_menu(request, pk):
             form.save()
             return redirect('menu_detail', pk=form.instance.pk)
     return render(request, 'menu/edit_menu.html', {'form': form})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

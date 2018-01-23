@@ -3,6 +3,7 @@ from .models import Menu
 from django.forms.widgets import SelectDateWidget
 from django.utils import timezone
 
+
 class MenuForm(forms.ModelForm):
 
     class Meta:
@@ -16,7 +17,6 @@ class MenuForm(forms.ModelForm):
         widgets = {
             'expiration_date': SelectDateWidget()
         }
-
 
     def clean_expiration_date(self):
         expiration_date = self.cleaned_data['expiration_date']
